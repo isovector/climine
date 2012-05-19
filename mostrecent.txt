@@ -1,0 +1,3 @@
+Error: no username and/or password specified
+You must either specify defaults by editing climine.pl,
+or set these options with the --user and --pass flags.

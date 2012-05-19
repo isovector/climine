@@ -1,0 +1,23 @@
+#!/bin/sh
+###########################################################
+# CLImail - a script to send email updates for jobmine    #
+#    written by Arvin Aminpour (aaminpou@uwaterloo.ca)    #
+#                                                         #
+# Last revised 2012-05-19                                 #
+#                                                         #
+# This software is licensed under the GPLv2               #
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html   #
+###########################################################
+#INSERT YOUR EMAIL BELOW!!!!!!!!!
+email=""
+echo "sending to $email"
+mv mostrecent.txt compareto.txt
+perl climine.pl > mostrecent.txt
+diff mostrecent.txt compareto.txt > anyDifferences.txt	
+if [ -s anyDifferences.txt ] ; then
+echo "New Information! Good luck!"
+mail $email -s "New Update on Jobmine!" < mostrecent.txt
+echo "Done"
+else
+echo "Awww. No Email"
+fi ;

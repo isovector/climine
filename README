@@ -1,1 +1,16 @@
 CLI query application for Jobmine (http://www.jobmine.uwaterloo.ca/) application lists.
+Mailing script to send updates on your applications on jobmine. 
+
+Add the script to CRON to send you emails. 
+Useful tutorial on CRON for *nix: 
+http://www.cyberciti.biz/faq/how-do-i-add-jobs-to-cron-under-linux-or-unix-oses/
+
+If you want to run/send emails everyday from 9am to 8PM every 20 minutes:
+
+20,40,59 9-20 * * * ~/climine/climail 
+
+		      ^ THIS IS WHERE THE SCRIPT IS LOCATION
+
+If you get permission errors for the CRON job, you need to use chmod
+
+chmod a+x ~/climine/climail
