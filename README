@@ -14,3 +14,6 @@ If you want to run/send emails everyday from 9am to 8PM every 20 minutes:
 If you get permission errors for the CRON job, you need to use chmod
 
 chmod a+x ~/climine/climail
+
+If you don't want to get emails from CRON daemon append the job with
+> /dev/null 2>&1
