@@ -10,14 +10,9 @@
 ###########################################################
 #INSERT YOUR EMAIL BELOW!!!!!!!!!
 email=""
-echo "sending to $email"
 mv mostrecent.txt compareto.txt
 perl climine.pl > mostrecent.txt
 diff mostrecent.txt compareto.txt > anyDifferences.txt	
 if [ -s anyDifferences.txt ] ; then
-echo "New Information! Good luck!"
 mail $email -s "New Update on Jobmine!" < mostrecent.txt
-echo "Done"
-else
-echo "Awww. No Email"
 fi ;
