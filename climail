@@ -10,6 +10,7 @@
 ###########################################################
 #INSERT YOUR EMAIL BELOW!!!!!!!!!
 email=""
+cd ~/climine
 mv mostrecent.txt compareto.txt
 perl climine.pl > mostrecent.txt
 diff mostrecent.txt compareto.txt > anyDifferences.txt	
