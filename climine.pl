@@ -8,7 +8,7 @@ my $opt_pwd         = "";
 # CLImine - a CLI query client for jobmine                #
 #    written by Sandy Maguire (amaguire@uwaterloo.ca)     #
 #                                                         #
-# Last revised 2012-05-17                                 #
+# Last revised 2012-05-28                                 #
 #                                                         #
 # This software is licensed under the GPLv2               #
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html   #
@@ -23,6 +23,7 @@ my $opt_pending     = -1;
 my $opt_screened    = -1;
 my $opt_alternate   = -1;
 my $opt_selected    = -1;
+my $opt_cancelled   = -1;
 my $opt_totals      = 0;
 my $opt_wait        = 0;
 my $opt_help        = 0;
@@ -41,6 +42,7 @@ GetOptions (
     'screened!' => \$opt_screened,
     'alternate!'=> \$opt_alternate,
     'selected!' => \$opt_selected,
+    'cancelled!'=> \$opt_cancelled,
     'id=s'      => \$opt_jobid,
     'job=s'     => \$opt_job,
     'employer=s'=> \$opt_employer,
@@ -62,6 +64,7 @@ if ($opt_help) {
     print "  --[no]screened\t[don't] show 'Not Selected' jobs\n";
     print "  --[no]alternate\t[don't] show 'Alternate' jobs\n";
     print "  --[no]selected\t[don't] show 'Selected' jobs\n";
+    print "  --[no]cancelled\t[don't] show 'Cancelled' jobs\n";
     print "  --job=<str>\t\tsearch for <str> in job titles\n";
     print "  --employer=<str>\tsearch for <str> in employer names\n";
     print "  --id=<int>[,...]\tsearch for job(s) with id(s) <int>\n";
@@ -76,6 +79,7 @@ if ($opt_none) {
     $opt_screened = 0   if $opt_screened == -1;
     $opt_alternate = 0  if $opt_alternate == -1;
     $opt_selected = 0   if $opt_selected == -1;
+    $opt_cancelled = 0  if $opt_selected == -1;
 }
 
 # no username/password
@@ -96,7 +100,8 @@ my %totals = (
         "Applied"       => 0,
         "Not Selected"  => 0,
         "Alternate"     => 0,
-        "Selected"      => 0
+        "Selected"      => 0,
+        "Cancelled"     => 0
     );
 
 package IdentityParse;
@@ -242,14 +247,23 @@ my @selected;
 my @alternate;
 my @applied;
 my @notselect;
+my @cancelled;
 my @merged;
 while (($key, $val) = each(%jobs)) {
     my @array = @{$val};
     my $status = $#array == 8 ? $array[6] : $array[5];
+    my $jobstatus = $#array == 8 ? $array[5] : $array[4];
 
     $status = trim $status;
+    $jobstatus = trim $jobstatus;
+    
+    $status = "Not Selected" if !($status eq "Selected") && !($jobstatus eq "Applications Available");
+    $status = "Cancelled" if $jobstatus eq "Cancelled";
+    
+    $array[$#array == 8 ? 6 : 5] = $status;
+    
     $totals{$status}++ if defined $totals{$status};
-
+    
     push @selected,  \@array 
         if $status eq "Selected" && ($opt_selected || 
             $array[1] =~ m/$opt_job/i || 
@@ -270,12 +284,18 @@ while (($key, $val) = each(%jobs)) {
             $array[1] =~ m/$opt_job/i || 
             $array[2] =~ m/$opt_employer/i ||
             $array[0] =~ m/$opt_jobid/);
+    push @cancelled, \@array 
+        if $status eq "Cancelled" && ($opt_cancelled || 
+            $array[1] =~ m/$opt_job/i || 
+            $array[2] =~ m/$opt_employer/i ||
+            $array[0] =~ m/$opt_jobid/);
 }
 
 # merge them back
 for my $val (@selected)  { push @merged, $val; }
 for my $val (@alternate) { push @merged, $val; }
 for my $val (@notselect) { push @merged, $val; }
+for my $val (@cancelled) { push @merged, $val; }
 for my $val (@applied)   { push @merged, $val; }
 
 my $output = 0;
@@ -297,6 +317,7 @@ for my $val (@merged) {
         $jobid  = Term::ExtendedColor::fg('yellow16', $jobid);
         $status = Term::ExtendedColor::fg('gray20', $status)    if $status eq "Applied";
         $status = Term::ExtendedColor::fg('magenta23', $status) if $status eq "Alternate";
+        $status = Term::ExtendedColor::fg('red2', $status)      if $status eq "Cancelled";
         $status = Term::ExtendedColor::fg('bold', Term::ExtendedColor::fg('red2', $status))       if $status eq "Not Selected";
         $status = Term::ExtendedColor::fg('bold', Term::ExtendedColor::fg('magenta23', $status))  if $status eq "Selected";
     }
