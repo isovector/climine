@@ -1,5 +1,5 @@
 CLI query application for Jobmine (http://www.jobmine.uwaterloo.ca/) application lists.
-Mailing script to send updates on Jobmine. 
+Mailing script to sends an email if there are any new job changes. 
 
 Add the script to CRON to send you emails. 
 Useful tutorial on CRON for *nix: 
