@@ -1,5 +1,5 @@
 CLI query application for Jobmine (http://www.jobmine.uwaterloo.ca/) application lists.
-Mailing script to send updates on your applications on jobmine. 
+Mailing script to send updates on Jobmine. 
 
 Add the script to CRON to send you emails. 
 Useful tutorial on CRON for *nix: 
@@ -11,9 +11,13 @@ If you want to run/send emails everyday from 9am to 8PM every 20 minutes:
 
 		           ^ THIS IS WHERE THE SCRIPT IS LOCATION
 
-If you get permission errors for the CRON job, you need to use chmod
+If you want to run it in the linux.student.cs environment, some tweaking is required like changing the directory where the txt
+is stored (preferably the climine directory) and changing to the climine directory before running the script.
 
-chmod a+x ~/climine/climail
+On the linux.student.cs environment, your cron job will look like this: 
+20,40,59 9-20 * * * cd ~/climine&&python climail.py 
 
-If you don't want to get emails from CRON daemon append the job with
-> /dev/null 2>&1
+Cron format
+Min Hour Day Month Year <commands>
+
+Have fun. 
